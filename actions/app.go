@@ -1,13 +1,17 @@
 package actions
 
 import (
+	"fmt"
+
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/buffalo/middleware"
 	"github.com/gobuffalo/buffalo/middleware/ssl"
 	"github.com/gobuffalo/envy"
 	"github.com/unrolled/secure"
 
+	"github.com/bketelsen/cog"
 	"github.com/bketelsen/cogtest/models"
+	"github.com/bketelsen/liveclock/liveclock"
 	"github.com/gobuffalo/buffalo/middleware/csrf"
 	"github.com/gobuffalo/buffalo/middleware/i18n"
 	"github.com/gobuffalo/packr"
@@ -55,7 +59,11 @@ func App() *buffalo.App {
 		app.Use(T.Middleware())
 
 		app.GET("/", HomeHandler)
-
+		lc := liveclock.NewLiveClock()
+		fmt.Println(lc.Box.List())
+		lc.SetID("myLiveClock")
+		cog.Register(lc.UXCog)
+		app.ServeFiles("/cogs", cog.AssetHandler)
 		app.ServeFiles("/assets", assetsBox)
 	}
 
